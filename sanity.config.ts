@@ -1,7 +1,7 @@
-import {defineConfig, isDev} from 'sanity'
-import {visionTool} from '@sanity/vision'
-import {structureTool} from 'sanity/structure'
-import {schemaTypes} from './schemas'
+import { defineConfig, isDev } from 'sanity'
+import { visionTool } from '@sanity/vision'
+import { structureTool } from 'sanity/structure'
+import { schemaTypes } from './schemas'
 // import {getStartedPlugin} from '../cms/plugins/sanity-plugin-tutorial'
 
 // const devOnlyPlugins = [getStartedPlugin()]
@@ -15,12 +15,13 @@ export default defineConfig({
 
   basePath: '/studio',
 
-  plugins: [structureTool(), visionTool(),
+  plugins: [
+    structureTool(),
+    visionTool(),
     //  ...(isDev ? devOnlyPlugins : [])
-    ],
+  ],
 
   schema: {
     types: schemaTypes,
   },
 })
-

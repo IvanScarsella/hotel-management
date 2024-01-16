@@ -9,9 +9,9 @@ import Toast from '@/components/Toast/Toast'
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ["400", "500", "700", "900"],
-  style: ["italic", "normal"],
-  variable: "--font-poppins"
+  weight: ['400', '500', '700', '900'],
+  style: ['italic', 'normal'],
+  variable: '--font-poppins',
 })
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default function RootLayout({
         <NextAuthProvider>
           <ThemeProvider>
             <Toast />
-            <main className='font-normal'>
+            <main className="font-normal">
               <Header />
               {children}
               <Footer />
