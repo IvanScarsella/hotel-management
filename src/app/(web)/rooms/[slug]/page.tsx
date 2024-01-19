@@ -9,11 +9,19 @@ import { LiaFireExtinguisherSolid } from 'react-icons/lia'
 import { AiOutlineMedicineBox } from 'react-icons/ai';
 import { GiSmokeBomb } from "react-icons/gi"
 import BookRoomCta from "@/components/BookRoomCta/BookRoomCta";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const RoomDetails = (props: { params: { slug: string } }) => {
    const {
       params: { slug },
    } = props;
+
+   const [checkinDate, setCheckinDate] = useState<Date | null>(null)
+   const [checkoutDate, setCheckoutDate] = useState<Date | null>(null)
+   const [adults, setAdults] = useState(1)
+   const [children, setChildren] = useState(0)
+   const [noOfChildren, setNoOfChildren] = useState(0)
 
    const fetchRoom = async () => getRoom(slug)
 
@@ -26,7 +34,35 @@ const RoomDetails = (props: { params: { slug: string } }) => {
       throw new Error('Cannot fetch Data')
 
    if (!room) return <LoadingSpinner />
-   console.log(room)
+
+   const calcMinCheckoutDate = () => {
+      if (checkinDate) {
+         const nextDay = new Date(checkinDate)
+         nextDay.setDate(nextDay.getDate() + 1)
+         return nextDay;
+      }
+      return null
+   }
+
+   const handleBookNowClick = () => {
+      if (!checkinDate || !checkoutDate) return toast.error("Please provide checkin / ckeckout date")
+
+      if (checkinDate > checkoutDate) return toast.error('Please choose a valid checkim period')
+
+      const calcNoOfDays = () => {
+         if (!checkinDate || !checkoutDate) return;
+         const timeDiff = checkoutDate.getTime() - checkinDate.getTime();
+         const noOfDays = Math.ceil(timeDiff / (24 * 60 * 60 * 1000));
+         return noOfDays
+      }
+
+      const numberOfDays = calcNoOfDays()
+
+      const hotelRoomSlug = room.slug.current;
+
+      // Integrate Stripe
+   }
+
    return (
       <div >
          <HotelPhotoGallery photos={room.images} />
@@ -104,7 +140,22 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   </div>
                </div>
                <div className="md:col-span-4 rounded-xl shadow-lg dark:shadow dark:shadow-white sticky top-10 h-fit overflow-auto">
-                  <BookRoomCta discount={room.discount} price={room.price} specialNote={room.specialNote} />
+                  <BookRoomCta
+                     discount={room.discount}
+                     price={room.price}
+                     specialNote={room.specialNote}
+                     checkinDate={checkinDate}
+                     setCheckinDate={setCheckinDate}
+                     checkoutDate={checkoutDate}
+                     setCheckoutDate={setCheckoutDate}
+                     calcMinCheckoutDate={calcMinCheckoutDate}
+                     adults={adults}
+                     noOfChildren={noOfChildren}
+                     setAdults={setAdults}
+                     setNoOfChildren={setNoOfChildren}
+                     isBooked={room.isBooked}
+                     handleBookNowClick={handleBookNowClick}
+                  />
                </div>
             </div>
          </div>
