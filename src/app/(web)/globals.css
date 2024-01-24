@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 .img {
-   @apply object-cover w-full h-full
+  @apply object-cover w-full h-full;
 }
 
 /* .scale-animation {

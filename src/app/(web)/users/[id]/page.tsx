@@ -1,27 +1,68 @@
 'use client'
 
-import { User } from "@/app/models/user"
-import { getUserBookings } from "@/libs/apis"
-import axios from "axios"
-import Image from "next/image"
-import useSWR from "swr"
-import LoadingSpinner from "../../loading"
-import { scale_animation } from "../../globals"
-import { FaSignOutAlt } from "react-icons/fa"
-import { signOut } from "next-auth/react"
-import { useState } from "react"
-import { BsJournalBookmarkFill } from "react-icons/bs"
-import { GiMoneyStack } from "react-icons/gi"
-import Table from "@/components/Table/Table"
-import Chart from '@/components/Chart/Chart';
+import { User } from '@/app/models/user'
+import { getUserBookings } from '@/libs/apis'
+import axios from 'axios'
+import Image from 'next/image'
+import useSWR from 'swr'
+import LoadingSpinner from '../../loading'
+import { scale_animation } from '../../globals'
+import { FaSignOutAlt } from 'react-icons/fa'
+import { signOut } from 'next-auth/react'
+import { useState } from 'react'
+import { BsJournalBookmarkFill } from 'react-icons/bs'
+import { GiMoneyStack } from 'react-icons/gi'
+import Table from '@/components/Table/Table'
+import Chart from '@/components/Chart/Chart'
+import RatingModal from '@/components/RatingModal/RatingModal'
+import BackDrop from '@/components/BackDrop/BackDrop'
+import toast from 'react-hot-toast/headless'
 
 const UserDetails = (props: { params: { id: string } }) => {
-
-   const { params: { id: userId }
+   const {
+      params: { id: userId },
    } = props
 
-   const [currentNav, setCurrentNav] = useState<'bookings' | 'amount' | 'ratings'>('bookings')
+   const [currentNav, setCurrentNav] = useState<
+      'bookings' | 'amount' | 'ratings'
+   >('bookings')
    const [roomId, setRoomId] = useState<string | null>(null)
+   const [isRatingVisible, setIsRatingVisible] = useState(false)
+   const [isSubmittingReview, setIsSubmittingReview] = useState(false)
+   const [ratingValue, setRatingValue] = useState<number | null>(0)
+   const [ratingText, setRatingText] = useState('')
+
+   const toggleRatingModal = () => setIsRatingVisible(prevState => !prevState)
+
+   const reviewSubmitHandler = async () => {
+      if (!ratingText.trim().length || !ratingValue) {
+         return toast.error('Please provide a rating text and a rating')
+      }
+
+      if (!roomId) toast.error('Id not provided');
+
+      setIsSubmittingReview(true)
+
+      try {
+         const { data } = await axios.post('/api/users', {
+            reviewText: ratingText,
+            ratingValue,
+            roomId
+         });
+         console.log(data);
+         toast.success('Review Submitted')
+
+      } catch (error) {
+         console.log(error);
+         toast.error('Review Failed')
+      } finally {
+         setRatingText('')
+         setRatingValue(null)
+         setRoomId(null)
+         setIsSubmittingReview(false)
+         setIsRatingVisible(false)
+      }
+   }
 
    const fetchUserBooking = async () => getUserBookings(userId)
    const fetchUserData = async () => {
@@ -38,7 +79,7 @@ const UserDetails = (props: { params: { id: string } }) => {
    const {
       data: userData,
       isLoading: loadingUserData,
-      error: errorGettingUserData
+      error: errorGettingUserData,
    } = useSWR('/api/users', fetchUserData)
 
    if (error || errorGettingUserData) throw new Error('Cannot fetch data')
@@ -65,9 +106,7 @@ const UserDetails = (props: { params: { id: string } }) => {
                </div>
                <div className="font-normal py-4 text-left">
                   <h6 className="text-xl font-bold pb-3">About</h6>
-                  <p className="text-sm">
-                     {userData.about ?? ''}
-                  </p>
+                  <p className="text-sm">{userData.about ?? ''}</p>
                </div>
                <div className="font-normal text-left">
                   <h6 className="text-xl font-bold pb-3">{userData.name}</h6>
@@ -75,22 +114,22 @@ const UserDetails = (props: { params: { id: string } }) => {
                <div className=" flex items-center">
                   <p className="mr-2">Sign Out</p>
                   <FaSignOutAlt
-                     className='text-3xl cursor-pointer'
+                     className="text-3xl cursor-pointer"
                      onClick={() => signOut({ callbackUrl: '/' })}
                   />
                </div>
             </div>
-            <div className='md:col-span-8 lg:col-span-9'>
-               <div className='flex items-center'>
-                  <h5 className='text-2xl font-bold mr-2'>Hello, {userData.name}</h5>
+            <div className="md:col-span-8 lg:col-span-9">
+               <div className="flex items-center">
+                  <h5 className="text-2xl font-bold mr-2">Hello, {userData.name}</h5>
                </div>
-               <div className='md:hidden w-14 h-14 rounded-l-full overflow-hidden'>
+               <div className="md:hidden w-14 h-14 rounded-l-full overflow-hidden">
                   <Image
                      className={`img ${scale_animation} rounded-full`}
                      width={56}
                      height={56}
                      src={userData.image}
-                     alt='User name'
+                     alt="User name"
                   />
                </div>
                <p className="block w-fit md:hidden text-sm py-2">
@@ -102,11 +141,11 @@ const UserDetails = (props: { params: { id: string } }) => {
                <div className="md:hidden flex items-center my-2">
                   <p className="mr-2">Sign out</p>
                   <FaSignOutAlt
-                     className='text-3xl cursor-pointer'
+                     className="text-3xl cursor-pointer"
                      onClick={() => signOut({ callbackUrl: '/' })}
                   />
                </div>
-               <nav className='sticky top-0 px-2 w-fit mx-auto md:w-full md:px-5 py-3 mb-8 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 mt-7'>
+               <nav className="sticky top-0 px-2 w-fit mx-auto md:w-full md:px-5 py-3 mb-8 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 mt-7">
                   <ol
                      className={`${currentNav === 'bookings' ? 'text-blue-600' : 'text-gray-700'} inline-flex mr-1 md:mr-5 items-center space-x-1 ms:space-x-3`}
                   >
@@ -135,8 +174,13 @@ const UserDetails = (props: { params: { id: string } }) => {
                   </ol>
                </nav>
                {currentNav === 'bookings' ? (
-                  userBookings &&
-                  <Table bookingDetails={userBookings} setRoomId={setRoomId} />
+                  userBookings && (
+                     <Table
+                        bookingDetails={userBookings}
+                        setRoomId={setRoomId}
+                        toggleRatingModal={toggleRatingModal}
+                     />
+                  )
                ) : (
                   <></>
                )}
@@ -145,10 +189,20 @@ const UserDetails = (props: { params: { id: string } }) => {
                   userBookings && <Chart userBookings={userBookings} />
                ) : (
                   <></>
-               )
-               }
+               )}
             </div>
          </div>
+         <RatingModal
+            isOpen={isRatingVisible}
+            ratingValue={ratingValue}
+            setRatingValue={setRatingValue}
+            ratingText={ratingText}
+            setRatingText={setRatingText}
+            isSubmittingReview={isSubmittingReview}
+            reviewSubmitHandler={reviewSubmitHandler}
+            toggleRatingModal={toggleRatingModal}
+         />
+         <BackDrop isOpen={isRatingVisible} />
       </div>
    )
 }

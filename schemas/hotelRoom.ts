@@ -25,7 +25,7 @@ const hotelRoom = {
       options: {
         source: 'name',
       },
-      validation: Rule => Rule.required(),
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
