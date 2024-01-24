@@ -13,6 +13,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { getStripe } from '@/libs/stripe'
+import RoomReview from '@/components/RoomReview/RoomReview'
 
 const RoomDetails = (props: { params: { slug: string } }) => {
   const {
@@ -27,7 +28,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
 
   const fetchRoom = async () => getRoom(slug)
 
-  const {} = useSWR('/api/room', fetchRoom)
+  const { } = useSWR('/api/room', fetchRoom)
 
   const { data: room, error, isLoading } = useSWR('/api/room', fetchRoom)
 
@@ -165,7 +166,7 @@ const RoomDetails = (props: { params: { slug: string } }) => {
                   <p className="md:text-lg font-semibold">Customer Reviews</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
-                  {/* Reviews */}
+                  <RoomReview roomId={room._id} />
                 </div>
               </div>
             </div>

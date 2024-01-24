@@ -15,7 +15,7 @@ const Footer = () => {
             <p>123 Road</p>
             <div className="flex items-center py-4">
               <BsFillSendFill />
-              <p className="ml-2">codewithlari</p>
+              <Link target='_blank' href='https://ivanscarsella.com.ar'><p className="ml-2">Iván Scarsella</p></Link>
             </div>
             <div className="flex items-center">
               <BsTelephoneOutbound />
@@ -23,7 +23,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center pt-4">
               <BiMessageDetail />
-              <p className="ml-2">codewithlari</p>
+              <Link target='_blank' href='https://ivanscarsella.com.ar'><p className="ml-2">Iván Scarsella</p></Link>
             </div>
           </div>
           <div className="flex-1 md:text-right">

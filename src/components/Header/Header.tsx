@@ -66,7 +66,7 @@ const Header = () => {
         </ul>
       </div>
 
-      <ul className="flex flex-items justify-between w-full md:w-1/3 mt-4">
+      <ul className="flex flex-items justify-around gap-2 w-full md:w-1/3 mt-4">
         <li className="hover:-translate-y-2 duration-500 transition-all">
           <Link href="/">Home</Link>
         </li>
