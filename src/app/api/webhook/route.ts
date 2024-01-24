@@ -8,6 +8,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2023-10-16',
 })
 
+interface Metadata {
+  adults: string;
+  checkinDate: string;
+  checkoutDate: string;
+  children: string;
+  hotelRoom: string;
+  numberOfDays: string;
+  user: string;
+  discount: string;
+  totalPrice: string;
+}
+
 export async function POST(req: Request, res: Response) {
   const reqBody = await req.text()
   const sig = req.headers.get('stripe-signature')
@@ -27,9 +39,10 @@ export async function POST(req: Request, res: Response) {
     case checkout_session_completed:
       const session = event.data.object
 
-      const {
-        // @ts-ignore
-        metadata: {
+      const sessionMetadata = (session as { metadata: Metadata | null }).metadata;
+
+      if (sessionMetadata) {
+        const {
           adults,
           checkinDate,
           checkoutDate,
@@ -39,30 +52,29 @@ export async function POST(req: Request, res: Response) {
           user,
           discount,
           totalPrice,
-        },
-      } = session
+        } = sessionMetadata;
 
-      await createBooking({
-        adults: Number(adults),
-        checkinDate,
-        checkoutDate,
-        children: Number(children),
-        hotelRoom,
-        numberOfDays: Number(numberOfDays),
-        discount: Number(discount),
-        totalPrice: Number(totalPrice),
-        user,
-      })
+        await createBooking({
+          adults: Number(adults),
+          checkinDate,
+          checkoutDate,
+          children: Number(children),
+          hotelRoom,
+          numberOfDays: Number(numberOfDays),
+          discount: Number(discount),
+          totalPrice: Number(totalPrice),
+          user,
+        })
 
-      //Update hotel room
+        //Update hotel room
 
-      await updateHotelRoom(hotelRoom)
+        await updateHotelRoom(hotelRoom)
 
-      return NextResponse.json('Booking successful', {
-        status: 200,
-        statusText: 'Booking successful',
-      })
-
+        return NextResponse.json('Booking successful', {
+          status: 200,
+          statusText: 'Booking successful',
+        })
+      }
     default:
       console.log(`Unhandled event type${event.type}`)
   }
