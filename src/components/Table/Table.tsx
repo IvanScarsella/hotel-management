@@ -23,7 +23,7 @@ const Table: FC<Props> = ({ bookingDetails, setRoomId, toggleRatingModal }) => {
             <th className="px-6 py-3">Price</th>
             <th className="px-6 py-3">Discount</th>
             <th className="px-6 py-3">No. Days Booked</th>
-            <th className="px-6 py-3">Days Left</th>
+            {/* <th className="px-6 py-3">Days Left</th> */}
             <th className="px-6 py-3"></th>
           </tr>
         </thead>
@@ -37,15 +37,15 @@ const Table: FC<Props> = ({ bookingDetails, setRoomId, toggleRatingModal }) => {
                 onClick={() =>
                   router.push(`/rooms/${booking.hotelRoom.slug.current}`)
                 }
-                className="px-6 underline text-blue-600 cursour-pointer py-4 font-medium whitespace-nowrap"
+                className="px-6 underline text-blue-600 cursor-pointer py-4 font-medium whitespace-nowrap"
               >
                 {booking.hotelRoom.name}
               </th>
               <td className="px-6 py-4">{booking.hotelRoom.price}</td>
               <td className="px-6 py-4">{booking.totalPrice}</td>
-              <td className="px-6 py-4">{booking.discount}</td>
+              <td className="px-6 py-4">{booking.discount * booking.numberOfDays}</td>
               <td className="px-6 py-4">{booking.numberOfDays}</td>
-              <td className="px-6 py-4">0</td>
+              {/* <td className="px-6 py-4">0</td> */}
               <td className="px-6 py-4">
                 <button
                   onClick={() => {
